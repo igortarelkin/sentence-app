@@ -27,11 +27,11 @@ const FinishPage: React.FC = () => {
     message.error('Submit failed!');
   };
 
-  const onFill = () => {
-    form.setFieldsValue({
-      url: 'https://taobao.com/',
-    });
-  };
+  // const onFill = () => {
+  //   form.setFieldsValue({
+  //     url: 'https://taobao.com/',
+  //   });
+  // };
 
     const onRepeatTest = () => {
       dispatch(setAnswerWho({answer:""}))
