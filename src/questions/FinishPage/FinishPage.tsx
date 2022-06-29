@@ -71,7 +71,7 @@ const FinishPage: React.FC = () => {
       <Form.Item>
         <Space>         
         <Link to={routeB}>       
-          <Button htmlType="button" onClick={onFill}>
+          <Button htmlType="button">
             Back
           </Button>
         </Link>
