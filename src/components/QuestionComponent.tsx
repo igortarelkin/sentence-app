@@ -1,120 +1,113 @@
-import { Button, Form, Input, message, Space } from 'antd';
-import React, { FC } from 'react';
+import { Button, Form, Input, message, Space } from "antd";
+import React, { FC, useState } from "react";
 import "antd/dist/antd.css";
-import './QuestionComponent.css'
-import { Link} from "react-router-dom";
+import "./QuestionComponent.css";
+import { Link } from "react-router-dom";
 
-
-import { useDispatch, useSelector} from 'react-redux';
-import { setAnswerWhat, setAnswerWhen, setAnswerWhere, setAnswerWho } from '../store/AnswerReducer';
-
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setAnswerWhat,
+  setAnswerWhen,
+  setAnswerWhere,
+  setAnswerWho,
+} from "../store/AnswerReducer";
+import { StatusComponent } from "./StatusComponent";
 
 interface ComponentProps {
-routeN?: string;
-routeB?: string;
-page?:string;
-labelQuestion?:string;
-name?:string;
+  routeN?: string;
+  routeB?: string;
+  page?: string;
+  labelQuestion?: string;
 }
 
+const QuestionComponent: FC<ComponentProps> = ({
+  routeN,
+  routeB,
+  page,
+  labelQuestion,
+}) => {
+  const dispatch = useDispatch();
+  const { who, what,when,where } = useSelector((state: any) => {
+    return state.answer;
+  });
 
-
-const QuestionComponent: FC<ComponentProps> = ({routeN,routeB,page,labelQuestion,name}) => {
-  const dispatch = useDispatch()
-  const {who} = useSelector((state:any)=>{return state.answer})
-  const {what} = useSelector((state:any)=>{return state.answer})
-  const {when} = useSelector((state:any)=>{return state.answer})
-  const {where} = useSelector((state:any)=>{return state.answer})
-
-  let currentValue
+  let currentValue: string;
+  let status: string = "not answered";
 
   const [form] = Form.useForm();
-  
+  const [answerStatus, setStatus] = useState("not answered");
 
-  
-  const onFinish = (e:React.FormEvent<HTMLInputElement>) => {         
-    message.success('The question was answered!');
-    
+  const onFinish = (e: React.FormEvent<HTMLInputElement>) => {
+    message.success("The question was answered!");
+    setStatus("answered");
   };
-
-
 
   const onFinishFailed = () => {
-    message.error('Submit failed!');
+    message.error("Please, enter your answer");
   };
 
-  const onFieldsChange = (value:any) => {
-   console.log(value)
+  const getInputValue = (e: React.FormEvent<HTMLInputElement>) => {
+    let value = e.currentTarget.value;
+    if (page === "FirstQuestion") {
+      status = "answered";
+      dispatch(setAnswerWho({ answer: value, answerState: status }));
+      currentValue = who;
+    } else if (page === "SecondQuestion") {
+      status = "answered";
+      dispatch(setAnswerWhat({ answer: value, answerState: status }));
+      currentValue = what;
+    } else if (page === "ThirdQuestion") {
+      status = "answered";
+      dispatch(setAnswerWhen({ answer: value, answerState: status }));
+      currentValue = when;
+    } else if (page === "FourthQuestion") {
+      status = "answered";
+      dispatch(setAnswerWhere({ answer: value, answerState: status }));
+      currentValue = where;
+    }
+    return value;
   };
 
-  // const onFill = (pg:any) => {    
-  //   form.setFieldsValue({
-  //     name : 'Test!',
-  //   });
-  // };
-
-
-
-const getInputValue = (
-  e: React.FormEvent<HTMLInputElement>
-) => {
-  const value = e.currentTarget.value;  
-  if(page === "FirstQuestion"){
-    dispatch(setAnswerWho({answer:value}))
-    currentValue = who
-  } else if(page === "SecondQuestion"){
-    dispatch(setAnswerWhat({answer:value}))
-    currentValue = what
-  } else if(page === "ThirdQuestion"){
-    dispatch(setAnswerWhen({answer:value}))
-    currentValue = when
-  } else if(page === "FourthQuestion"){
-    dispatch(setAnswerWhere({answer:value}))
-    currentValue = where
-  } 
-  
-};
-
-  return (  
-         
-    <Form 
+  return (
+    <Form
       form={form}
-      layout="vertical"     
+      layout="vertical"
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      autoComplete="off"   
-      onValuesChange={onFieldsChange}
-      >
+      autoComplete="off"
+    >
       <Form.Item
-        name={name}
+        name="answer"
         label={labelQuestion}
-        rules={[{ required: false }, { type: 'string', warningOnly: true }, { type: 'string', min: 4 }]}
+        rules={[
+          { required: true },
+          { type: "string", warningOnly: true },
+          { type: "string", min: 2 },
+        ]}
       >
-        <Input placeholder="Enter your answer here" type="text" onChange={getInputValue} value = {currentValue} />
+        <Input
+          placeholder="Enter your answer here"
+          type="text"
+          onChange={getInputValue}
+          value={currentValue!}
+        />
       </Form.Item>
       <Form.Item>
-        <Space>  
-        <Link to ={routeB!}>       
-          <Button htmlType="button">
-            Back
-          </Button>
-        </Link>
-          <Button type="primary" htmlType="submit" >
+        <Space>
+          <Link to={routeB!}>
+            <Button htmlType="button">Back</Button>
+          </Link>
+          <Button type="primary" htmlType="submit">
             Accept your answer
           </Button>
-          <Link to ={routeN!}>
-          <Button htmlType="button">
-            Next
-          </Button>
+          <Link to={routeN!}>
+            <Button htmlType="button">Next</Button>
           </Link>
+          <StatusComponent status={answerStatus} />
         </Space>
       </Form.Item>
-    </Form>        
+    </Form>
   );
 };
 
 export default QuestionComponent;
-
-
-

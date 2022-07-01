@@ -13,7 +13,7 @@ const FirstQuestion: React.FC = () => {
   };
 
   const onFinishFailed = () => {
-    message.error('Submit failed!');
+    message.error('Please, enter your answer');
   };
 
   const onFill = () => {
